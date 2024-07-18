@@ -8,27 +8,25 @@ const initialStateAccount = {
 
 const initialStateCustomer = {
   fullName: "",
-  ID: "",
+  nationalID: "",
   createdAt: "",
 };
 
 function accountReducer(state = initialStateAccount, action) {
   switch (action.type) {
-    case "account/deposite":
+    case "account/deposit":
       return { ...state, balance: state.balance + action.payload };
-
     case "account/withdraw":
       return { ...state, balance: state.balance - action.payload };
-
     case "account/requestLoan":
       if (state.loan > 0) return state;
+      // LATER
       return {
         ...state,
         loan: action.payload.amount,
         loanPurpose: action.payload.purpose,
         balance: state.balance + action.payload.amount,
       };
-
     case "account/payLoan":
       return {
         ...state,
@@ -48,22 +46,15 @@ function customerReducer(state = initialStateCustomer, action) {
       return {
         ...state,
         fullName: action.payload.fullName,
-        ID: action.payload.ID,
+        nationalID: action.payload.nationalID,
         createdAt: action.payload.createdAt,
       };
-
-    case "customer/updateCustomer":
-      return {
-        ...state,
-        fullName: action.payload,
-      };
-
+    case "customer/updateName":
+      return { ...state, fullName: action.payload };
     default:
       return state;
   }
 }
-
-//combine all reducer to make one
 
 const rootReducer = combineReducers({
   account: accountReducer,
@@ -72,19 +63,21 @@ const rootReducer = combineReducers({
 
 const store = createStore(rootReducer);
 
-// store.dispatch({ type: "account/deposite", payload: 500 });
+// store.dispatch({ type: "account/deposit", payload: 500 });
 // store.dispatch({ type: "account/withdraw", payload: 200 });
 // console.log(store.getState());
 // store.dispatch({
 //   type: "account/requestLoan",
-//   payload: { amount: 1000, purpose: "buy an ipad" },
+//   payload: { amount: 1000, purpose: "Buy a car" },
 // });
 // console.log(store.getState());
 // store.dispatch({ type: "account/payLoan" });
 // console.log(store.getState());
 
+// const ACOOUNT_DEPOSIT = "account/deposit";
+
 function deposit(amount) {
-  return { type: "account/deposite", payload: amount };
+  return { type: "account/deposit", payload: amount };
 }
 
 function withdraw(amount) {
@@ -94,7 +87,7 @@ function withdraw(amount) {
 function requestLoan(amount, purpose) {
   return {
     type: "account/requestLoan",
-    payload: { amount: 1000, purpose: "buy an ipad" },
+    payload: { amount, purpose },
   };
 }
 
@@ -105,25 +98,23 @@ function payLoan() {
 store.dispatch(deposit(500));
 store.dispatch(withdraw(200));
 console.log(store.getState());
-store.dispatch(requestLoan(1000, "buy a car"));
+
+store.dispatch(requestLoan(1000, "Buy a cheap car"));
 console.log(store.getState());
 store.dispatch(payLoan());
 console.log(store.getState());
 
-function createCustomer(fullName, ID) {
+function createCustomer(fullName, nationalID) {
   return {
     type: "customer/createCustomer",
-    payload: {
-      fullName,
-      ID,
-      createdAt: new Date().toISOString(),
-    },
+    payload: { fullName, nationalID, createdAt: new Date().toISOString() },
   };
 }
 
-function updatName(fullName) {
-  return { type: "account/updatName", payload: fullName };
+function updateName(fullName) {
+  return { type: "account/updateName", payload: fullName };
 }
 
-store.dispatch(createCustomer("lily", "484954"));
+store.dispatch(createCustomer("Jonas Schmedtmann", "24343434"));
+store.dispatch(deposit(250));
 console.log(store.getState());
